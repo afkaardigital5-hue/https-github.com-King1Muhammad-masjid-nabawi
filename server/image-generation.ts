@@ -4,14 +4,18 @@ import path from "path";
 import axios from "axios";
 import { log } from "./vite";
 
-// Initialize OpenAI with your API key
-const openai = new OpenAI({
+// Initialize OpenAI with your API key (conditionally)
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-});
+}) : null;
 
 // Function to generate an image using DALL-E
 export async function generateImage(prompt: string, outputFilename: string): Promise<string> {
   try {
+    if (!openai) {
+      throw new Error("OpenAI API key is not configured");
+    }
+    
     log(`Generating image for prompt: ${prompt}`, "image-generation");
 
     // Call the OpenAI API to generate an image
